@@ -21,7 +21,7 @@ namespace ProyectoFinal_FernandezCarlos.Data
             }
 
             string adminEmail = "admin@fidematricula.com";
-            string adminPassword = "admin123";
+            string adminPassword = "Admin.123";
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 

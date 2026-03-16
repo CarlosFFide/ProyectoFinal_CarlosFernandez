@@ -1,0 +1,32 @@
+﻿@model IEnumerable<ProyectoFinal_FernandezCarlos.Models.Carrera>
+
+@{
+    ViewData["Title"] = "Carreras disponibles";
+}
+
+<h1>Carreras disponibles</h1>
+
+@if (!Model.Any())
+{
+    <p>No hay carreras registradas.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var carrera in Model)
+            {
+                <tr>
+                    <td>@carrera.Codigo</td>
+                    <td>@carrera.Nombre</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
