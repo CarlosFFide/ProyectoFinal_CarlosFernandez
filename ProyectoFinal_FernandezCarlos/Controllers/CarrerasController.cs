@@ -16,7 +16,7 @@ namespace ProyectoFinal_FernandezCarlos.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Inicio()
         {
             var carreras = await _context.Set<Carrera>().ToListAsync();
             return View(carreras);
@@ -38,7 +38,46 @@ namespace ProyectoFinal_FernandezCarlos.Controllers
 
             _context.Set<Carrera>().Add(carrera);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Inicio));
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var carrera = await _context.Carreras.FindAsync(id);
+            if (carrera == null) return NotFound();
+            return View(carrera);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Carrera carrera)
+        {
+            if (id != carrera.Id) return NotFound();
+            if (!ModelState.IsValid) return View(carrera);
+
+            _context.Carreras.Update(carrera);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Inicio));
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var carrera = await _context.Carreras.FindAsync(id);
+            if (carrera == null) return NotFound();
+            return View(carrera);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var carrera = await _context.Carreras.FindAsync(id);
+            if (carrera != null)
+            {
+                _context.Carreras.Remove(carrera);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Inicio));
         }
     }
 }

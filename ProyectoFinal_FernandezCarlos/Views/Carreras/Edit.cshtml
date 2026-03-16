@@ -1,25 +1,24 @@
-﻿@model ProyectoFinal_FernandezCarlos.Models.Carrera
+@model ProyectoFinal_FernandezCarlos.Models.Carrera
 
 @{
-    ViewData["Title"] = "Agregar carrera";
+    ViewData["Title"] = "Editar carrera";
 }
 
-<h1>Agregar carrera</h1>
+<h1>Editar carrera</h1>
 
-<form asp-action="Create" method="post">
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
     <div class="mb-3">
         <label asp-for="Codigo" class="form-label"></label>
         <input asp-for="Codigo" class="form-control" />
         <span asp-validation-for="Codigo" class="text-danger"></span>
     </div>
-
     <div class="mb-3">
         <label asp-for="Nombre" class="form-label"></label>
         <input asp-for="Nombre" class="form-control" />
         <span asp-validation-for="Nombre" class="text-danger"></span>
     </div>
-
-    <button type="submit" class="btn btn-success">Guardar</button>
+    <button type="submit" class="btn btn-primary">Guardar</button>
     <a asp-action="Inicio" class="btn btn-secondary">Volver</a>
 </form>
 

@@ -1,0 +1,45 @@
+@model IEnumerable<ProyectoFinal_FernandezCarlos.Models.Curso>
+
+@{
+    ViewData["Title"] = "Cursos";
+}
+
+<h1>Cursos</h1>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Agregar Curso</a>
+
+@if (!Model.Any())
+{
+    <p>No hay cursos registrados.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Créditos</th>
+                <th>Carrera</th>
+                <th>Docente</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var curso in Model)
+            {
+                <tr>
+                    <td>@curso.Codigo</td>
+                    <td>@curso.Nombre</td>
+                    <td>@curso.Creditos</td>
+                    <td>@curso.Carrera?.Nombre</td>
+                    <td>@curso.Docente?.Nombre</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@curso.Id" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@curso.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

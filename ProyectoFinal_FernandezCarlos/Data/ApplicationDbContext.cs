@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ProyectoFinal_FernandezCarlos.Models;
-using ProyectoFinal_FernandezCarlos.Data;
 
 namespace ProyectoFinal_FernandezCarlos.Data
 {
