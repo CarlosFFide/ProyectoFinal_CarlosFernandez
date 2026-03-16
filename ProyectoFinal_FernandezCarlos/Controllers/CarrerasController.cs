@@ -71,9 +71,17 @@ namespace ProyectoFinal_FernandezCarlos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var carrera = await _context.Carreras.FindAsync(id);
+            var carrera = await _context.Carreras
+                .Include(c => c.Cursos)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (carrera != null)
             {
+                if (carrera.Cursos.Any())
+                {
+                    TempData["Error"] = "No se puede eliminar la carrera porque tiene cursos asociados.";
+                    return RedirectToAction(nameof(Inicio));
+                }
                 _context.Carreras.Remove(carrera);
                 await _context.SaveChangesAsync();
             }

@@ -6,6 +6,11 @@
 
 <h1>Cursos</h1>
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
 <a asp-action="Create" class="btn btn-primary mb-3">Agregar Curso</a>
 
 @if (!Model.Any())

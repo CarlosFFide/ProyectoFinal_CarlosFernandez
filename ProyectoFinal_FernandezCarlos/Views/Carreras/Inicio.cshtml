@@ -6,6 +6,11 @@
 
 <h1>Carreras disponibles</h1>
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
 @if (!Model.Any())
 {
     <p>No hay carreras registradas.</p>

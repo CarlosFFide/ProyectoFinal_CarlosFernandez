@@ -89,9 +89,17 @@ namespace ProyectoFinal_FernandezCarlos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var curso = await _context.Cursos.FindAsync(id);
+            var curso = await _context.Cursos
+                .Include(c => c.Matriculas)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (curso != null)
             {
+                if (curso.Matriculas.Any())
+                {
+                    TempData["Error"] = "No se puede eliminar el curso porque tiene matrículas asociadas.";
+                    return RedirectToAction(nameof(Inicio));
+                }
                 _context.Cursos.Remove(curso);
                 await _context.SaveChangesAsync();
             }
