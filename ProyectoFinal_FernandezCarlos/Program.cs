@@ -43,7 +43,7 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Home}/{action=Inicio}/{id?}")
     .WithStaticAssets();
 
 app.MapRazorPages();
@@ -54,5 +54,4 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.SeedRolesAndAdminAsync(services);
 }
 
-app.Run();
 app.Run();

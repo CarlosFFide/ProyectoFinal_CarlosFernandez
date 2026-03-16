@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
+    <Folder Include="Views\Docentes\" />
+    <Folder Include="Views\Matriculas\" />
   </ItemGroup>
 
 </Project>

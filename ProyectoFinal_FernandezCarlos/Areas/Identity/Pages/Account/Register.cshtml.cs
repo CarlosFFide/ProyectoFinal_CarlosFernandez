@@ -127,7 +127,7 @@ namespace ProyectoFinal_FernandezCarlos.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        return Redirect("/Estudiante/Carreras");
                     }
                 }
 
