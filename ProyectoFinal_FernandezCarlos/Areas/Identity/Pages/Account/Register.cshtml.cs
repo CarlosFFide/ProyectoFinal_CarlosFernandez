@@ -1,22 +1,14 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
+﻿#nullable disable
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 using ProyectoFinal_FernandezCarlos.Data;
 using ProyectoFinal_FernandezCarlos.Models;
 
@@ -58,20 +50,21 @@ namespace ProyectoFinal_FernandezCarlos.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
-            [Display(Name = "Email")]
+            [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
+            [EmailAddress(ErrorMessage = "Debe ingresar un correo electrónico válido.")]
+            [Display(Name = "Correo electrónico")]
             public string Email { get; set; }
 
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "La contraseña es obligatoria.")]
+            [StringLength(100, ErrorMessage = "La contraseña debe tener entre {2} y {1} caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Contraseña")]
             public string Password { get; set; }
 
+            [Required(ErrorMessage = "Debe confirmar la contraseña.")]
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Confirmar contraseña")]
+            [Compare("Password", ErrorMessage = "La contraseña y su confirmación no coinciden.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -92,11 +85,12 @@ namespace ProyectoFinal_FernandezCarlos.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("Usuario estudiante creado correctamente.");
 
                     await _userManager.AddToRoleAsync(user, "Estudiante");
 
@@ -110,30 +104,42 @@ namespace ProyectoFinal_FernandezCarlos.Areas.Identity.Pages.Account
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                        values: new
+                        {
+                            area = "Identity",
+                            userId = userId,
+                            code = code,
+                            returnUrl = returnUrl
+                        },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(
+                        Input.Email,
+                        "Confirmación de correo",
+                        $"Confirme su cuenta ingresando al siguiente enlace: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>confirmar correo</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        return RedirectToPage("RegisterConfirmation", new
+                        {
+                            email = Input.Email,
+                            returnUrl = returnUrl
+                        });
                     }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return Redirect("/Estudiante/Carreras");
-                    }
+
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return Redirect("/Estudiante/Inicio");
                 }
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError(string.Empty, TraducirErrorIdentity(error));
                 }
             }
 
@@ -148,9 +154,8 @@ namespace ProyectoFinal_FernandezCarlos.Areas.Identity.Pages.Account
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                throw new InvalidOperationException(
+                    $"No se pudo crear una instancia de '{nameof(ApplicationUser)}'. Verifique que la clase no sea abstracta y tenga un constructor sin parámetros.");
             }
         }
 
@@ -158,9 +163,28 @@ namespace ProyectoFinal_FernandezCarlos.Areas.Identity.Pages.Account
         {
             if (!_userManager.SupportsUserEmail)
             {
-                throw new NotSupportedException("The default UI requires a user store with email support.");
+                throw new NotSupportedException("El sistema requiere soporte de correo electrónico para registrar usuarios.");
             }
+
             return (IUserEmailStore<ApplicationUser>)_userStore;
+        }
+
+        private string TraducirErrorIdentity(IdentityError error)
+        {
+            return error.Code switch
+            {
+                "DuplicateUserName" => "Ya existe un usuario registrado con este correo electrónico.",
+                "DuplicateEmail" => "Ya existe un usuario registrado con este correo electrónico.",
+                "InvalidUserName" => "El correo electrónico ingresado no es válido como nombre de usuario.",
+                "InvalidEmail" => "El correo electrónico ingresado no es válido.",
+                "PasswordTooShort" => "La contraseña es demasiado corta.",
+                "PasswordRequiresNonAlphanumeric" => "La contraseña debe incluir al menos un carácter especial.",
+                "PasswordRequiresDigit" => "La contraseña debe incluir al menos un número.",
+                "PasswordRequiresLower" => "La contraseña debe incluir al menos una letra minúscula.",
+                "PasswordRequiresUpper" => "La contraseña debe incluir al menos una letra mayúscula.",
+                "PasswordRequiresUniqueChars" => "La contraseña debe incluir más variedad de caracteres.",
+                _ => error.Description
+            };
         }
     }
 }

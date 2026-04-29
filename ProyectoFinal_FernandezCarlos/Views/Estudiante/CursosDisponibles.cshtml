@@ -1,15 +1,15 @@
-﻿@model IEnumerable<ProyectoFinal_FernandezCarlos.Models.Carrera>
+﻿@model IEnumerable<ProyectoFinal_FernandezCarlos.Models.Curso>
 
 @{
-    ViewData["Title"] = "Carreras disponibles";
-    int? carreraActualId = ViewBag.CarreraActualId as int?;
+    ViewData["Title"] = "Cursos disponibles";
+    var cursosMatriculados = ViewBag.CursosMatriculados as List<int> ?? new List<int>();
     int page = ViewBag.Page is int p ? p : 1;
     int totalPages = ViewBag.TotalPages is int tp ? tp : 1;
 }
 
 <partial name="_BackButton" />
 
-<h1>Carreras disponibles</h1>
+<h1>Cursos disponibles</h1>
 
 @if (TempData["Mensaje"] != null)
 {
@@ -25,19 +25,10 @@
     </div>
 }
 
-@if (carreraActualId != null)
-{
-    <form asp-action="QuitarCarrera" method="post" class="mb-3">
-        <button type="submit" class="btn btn-danger">
-            Quitar carrera seleccionada
-        </button>
-    </form>
-}
-
 @if (!Model.Any())
 {
     <div class="alert alert-info">
-        No hay carreras disponibles.
+        No hay cursos disponibles para la carrera seleccionada.
     </div>
 }
 else
@@ -47,30 +38,43 @@ else
             <tr>
                 <th>Código</th>
                 <th>Nombre</th>
+                <th>Créditos</th>
+                <th>Docente</th>
                 <th>Acción</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var carrera in Model)
+            @foreach (var curso in Model)
             {
-                var esCarreraActual = carreraActualId == carrera.Id;
+                var yaMatriculado = cursosMatriculados.Contains(curso.Id);
 
                 <tr>
-                    <td>@carrera.Codigo</td>
-                    <td>@carrera.Nombre</td>
+                    <td>@curso.Codigo</td>
+                    <td>@curso.Nombre</td>
+                    <td>@curso.Creditos</td>
                     <td>
-                        @if (esCarreraActual)
+                        @if (curso.Docente != null)
+                        {
+                            @curso.Docente.Nombre
+                        }
+                        else
+                        {
+                            <span>Sin docente</span>
+                        }
+                    </td>
+                    <td>
+                        @if (yaMatriculado)
                         {
                             <button type="button" class="btn-sistema" disabled>
-                                Seleccionada
+                                Matriculado
                             </button>
                         }
                         else
                         {
-                            <form asp-action="SeleccionarCarrera" method="post">
-                                <input type="hidden" name="carreraId" value="@carrera.Id" />
+                            <form asp-action="Matricular" method="post">
+                                <input type="hidden" name="cursoId" value="@curso.Id" />
                                 <button type="submit" class="btn-sistema">
-                                    Seleccionar
+                                    Matricular
                                 </button>
                             </form>
                         }
@@ -86,7 +90,7 @@ else
     <div class="mt-4 text-center">
         @for (int i = 1; i <= totalPages; i++)
         {
-            <a asp-action="Carreras"
+            <a asp-action="CursosDisponibles"
                    asp-route-page="@i"
                    class="btn-sistema btn-paginacion @(i == page ? "btn-paginacion-activa" : "")">
                 @i

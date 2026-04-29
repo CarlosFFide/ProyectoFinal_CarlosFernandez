@@ -7,20 +7,20 @@ using ProyectoFinal_FernandezCarlos.Models;
 namespace ProyectoFinal_FernandezCarlos.Controllers
 {
     [Authorize(Roles = "Administrador")]
-    public class CarrerasController : Controller
+    public class DocentesController : Controller
     {
         private readonly ApplicationDbContext _context;
         private const int PageSize = 5;
 
-        public CarrerasController(ApplicationDbContext context)
+        public DocentesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public async Task<IActionResult> Inicio(int page = 1)
         {
-            var query = _context.Carreras
-                .OrderBy(c => c.Nombre)
+            var query = _context.Docentes
+                .OrderBy(d => d.Nombre)
                 .AsQueryable();
 
             var totalItems = await query.CountAsync();
@@ -28,7 +28,7 @@ namespace ProyectoFinal_FernandezCarlos.Controllers
 
             page = AjustarPagina(page, totalPages);
 
-            var carreras = await query
+            var docentes = await query
                 .Skip((page - 1) * PageSize)
                 .Take(PageSize)
                 .ToListAsync();
@@ -36,7 +36,7 @@ namespace ProyectoFinal_FernandezCarlos.Controllers
             ViewBag.Page = page;
             ViewBag.TotalPages = totalPages;
 
-            return View(carreras);
+            return View(docentes);
         }
 
         public IActionResult Create()
@@ -46,14 +46,14 @@ namespace ProyectoFinal_FernandezCarlos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Carrera carrera)
+        public async Task<IActionResult> Create(Docente docente)
         {
             if (!ModelState.IsValid)
             {
-                return View(carrera);
+                return View(docente);
             }
 
-            _context.Carreras.Add(carrera);
+            _context.Docentes.Add(docente);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Inicio));
@@ -61,31 +61,31 @@ namespace ProyectoFinal_FernandezCarlos.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var carrera = await _context.Carreras.FindAsync(id);
+            var docente = await _context.Docentes.FindAsync(id);
 
-            if (carrera == null)
+            if (docente == null)
             {
                 return NotFound();
             }
 
-            return View(carrera);
+            return View(docente);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Carrera carrera)
+        public async Task<IActionResult> Edit(int id, Docente docente)
         {
-            if (id != carrera.Id)
+            if (id != docente.Id)
             {
                 return NotFound();
             }
 
             if (!ModelState.IsValid)
             {
-                return View(carrera);
+                return View(docente);
             }
 
-            _context.Carreras.Update(carrera);
+            _context.Docentes.Update(docente);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Inicio));
@@ -93,35 +93,35 @@ namespace ProyectoFinal_FernandezCarlos.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var carrera = await _context.Carreras
-                .Include(c => c.Cursos)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            var docente = await _context.Docentes
+                .Include(d => d.Cursos)
+                .FirstOrDefaultAsync(d => d.Id == id);
 
-            if (carrera == null)
+            if (docente == null)
             {
                 return NotFound();
             }
 
-            return View(carrera);
+            return View(docente);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var carrera = await _context.Carreras
-                .Include(c => c.Cursos)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            var docente = await _context.Docentes
+                .Include(d => d.Cursos)
+                .FirstOrDefaultAsync(d => d.Id == id);
 
-            if (carrera != null)
+            if (docente != null)
             {
-                if (carrera.Cursos.Any())
+                if (docente.Cursos.Any())
                 {
-                    TempData["Error"] = "No se puede eliminar la carrera porque tiene cursos asociados.";
+                    TempData["Error"] = "No se puede eliminar el docente porque tiene cursos asociados.";
                     return RedirectToAction(nameof(Inicio));
                 }
 
-                _context.Carreras.Remove(carrera);
+                _context.Docentes.Remove(docente);
                 await _context.SaveChangesAsync();
             }
 

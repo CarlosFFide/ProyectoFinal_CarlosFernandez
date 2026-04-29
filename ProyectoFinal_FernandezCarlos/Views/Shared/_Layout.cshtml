@@ -1,68 +1,84 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ProyectoFinal_FernandezCarlos</title>
+    <title>@ViewData["Title"] - Sistema de Matrícula</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ProyectoFinal_FernandezCarlos.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Inicio">ProyectoFinal_FernandezCarlos</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Inicio">Inicio</a>
-                        </li>
+    <div class="app-shell">
+        <header class="app-header">
+            <div class="app-header-inner">
+                <div class="app-title-area">
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a class="app-title" asp-area="" asp-controller="Admin" asp-action="Inicio">
+                            Panel Administrador
+                        </a>
+                    }
+                    else if (User.IsInRole("Estudiante"))
+                    {
+                        <a class="app-title" asp-area="" asp-controller="Estudiante" asp-action="Inicio">
+                            Panel de Estudiante
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="app-title" asp-area="" asp-controller="Home" asp-action="Inicio">
+                            Sistema de Matrícula
+                        </a>
+                    }
+                </div>
 
-                        @if (User.IsInRole("Administrador"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Carreras" asp-action="Inicio">Carreras</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Carreras" asp-action="Create">Agregar Carrera</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Cursos" asp-action="Inicio">Cursos</a>
-                            </li>
-                        }
+                <nav class="app-nav">
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a asp-area="" asp-controller="Admin" asp-action="Inicio">Inicio</a>
+                        <a asp-area="" asp-controller="Carreras" asp-action="Inicio">Carreras</a>
+                        <a asp-area="" asp-controller="Cursos" asp-action="Inicio">Cursos</a>
+                        <a asp-area="" asp-controller="Docentes" asp-action="Inicio">Docentes</a>
+                    }
+                    else if (User.IsInRole("Estudiante"))
+                    {
+                        <a asp-area="" asp-controller="Estudiante" asp-action="Inicio">Inicio</a>
+                        <a asp-area="" asp-controller="Estudiante" asp-action="Carreras">Carreras</a>
+                        <a asp-area="" asp-controller="Estudiante" asp-action="CursosDisponibles">Matricular cursos</a>
+                        <a asp-area="" asp-controller="Estudiante" asp-action="MisCursos">Mis cursos</a>
+                    }
+                    else
+                    {
+                        <a asp-area="" asp-controller="Home" asp-action="Inicio">Inicio</a>
+                    }
+                </nav>
 
-                        @if (User.IsInRole("Estudiante"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Estudiante" asp-action="Carreras">Carreras disponibles</a>
-                            </li>
-                        }
-                    </ul>
-                    <partial name="_LoginPartial" />
+                <div class="app-session">
+                    @if (!User.Identity?.IsAuthenticated ?? true)
+                    {
+                        <a class="session-button session-login" asp-area="Identity" asp-page="/Account/Login">
+                            Iniciar sesión
+                        </a>
+                    }
+                    else
+                    {
+                        <partial name="_LoginPartial" />
+                    }
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+        </header>
+
+        <main class="app-main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ProyectoFinal_FernandezCarlos - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

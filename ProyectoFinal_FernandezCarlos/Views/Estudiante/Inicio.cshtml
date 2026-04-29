@@ -1,0 +1,30 @@
+﻿@model ProyectoFinal_FernandezCarlos.Models.Estudiante
+
+@{
+    ViewData["Title"] = "Panel de Estudiante";
+}
+
+<div class="panel-container">
+    @if (Model?.Carrera != null)
+    {
+        <p class="mb-4"><strong>Carrera seleccionada:</strong> @Model.Carrera.Nombre</p>
+    }
+    else
+    {
+        <p class="mb-4"><strong>Carrera seleccionada:</strong> Ninguna</p>
+    }
+
+    <div class="panel-actions">
+        <a asp-controller="Estudiante" asp-action="Carreras" class="panel-card-button">
+            Seleccionar Carrera
+        </a>
+
+        <a asp-controller="Estudiante" asp-action="MisCursos" class="panel-card-button">
+            Mis cursos
+        </a>
+
+        <a asp-controller="Estudiante" asp-action="CursosDisponibles" class="panel-card-button">
+            Matricular cursos
+        </a>
+    </div>
+</div>

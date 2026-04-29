@@ -2,7 +2,11 @@
 
 @{
     ViewData["Title"] = "Cursos";
+    string search = ViewBag.Search as string ?? string.Empty;
+    int? creditos = ViewBag.Creditos as int?;
 }
+
+<partial name="_BackButton" />
 
 <h1>Cursos</h1>
 
@@ -11,40 +15,36 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<a asp-action="Create" class="btn btn-primary mb-3">Agregar Curso</a>
+<a asp-action="Create" class="btn-sistema mb-3">Agregar Curso</a>
 
-@if (!Model.Any())
-{
-    <p>No hay cursos registrados.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Nombre</th>
-                <th>Créditos</th>
-                <th>Carrera</th>
-                <th>Docente</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var curso in Model)
-            {
-                <tr>
-                    <td>@curso.Codigo</td>
-                    <td>@curso.Nombre</td>
-                    <td>@curso.Creditos</td>
-                    <td>@curso.Carrera?.Nombre</td>
-                    <td>@curso.Docente?.Nombre</td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@curso.Id" class="btn btn-sm btn-warning">Editar</a>
-                        <a asp-action="Delete" asp-route-id="@curso.Id" class="btn btn-sm btn-danger">Eliminar</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="row mb-3">
+    <div class="col-md-8 mb-2">
+        <label for="buscarCursos" class="form-label">Buscar curso</label>
+        <input type="text"
+               id="buscarCursos"
+               class="form-control"
+               value="@search"
+               placeholder="Código, nombre, carrera o docente" />
+    </div>
+
+    <div class="col-md-4 mb-2">
+        <label for="creditosCursos" class="form-label">Créditos</label>
+        <input type="number"
+               id="creditosCursos"
+               class="form-control"
+               min="1"
+               max="10"
+               value="@(creditos?.ToString() ?? string.Empty)"
+               placeholder="Todos" />
+    </div>
+</div>
+
+<div id="tablaCursos">
+    <partial name="_CursosTabla" model="Model" />
+</div>
+
+@section Scripts {
+    <script>
+        configurarTablaCursosAjax();
+    </script>
 }

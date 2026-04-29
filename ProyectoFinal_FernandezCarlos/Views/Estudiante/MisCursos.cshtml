@@ -1,0 +1,92 @@
+﻿@model IEnumerable<ProyectoFinal_FernandezCarlos.Models.Matricula>
+
+@{
+    ViewData["Title"] = "Mis cursos";
+    int page = ViewBag.Page is int p ? p : 1;
+    int totalPages = ViewBag.TotalPages is int tp ? tp : 1;
+}
+
+<partial name="_BackButton" />
+
+<h1>Mis cursos</h1>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Mensaje"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No tiene cursos matriculados.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Curso</th>
+                <th>Créditos</th>
+                <th>Carrera</th>
+                <th>Docente</th>
+                <th>Fecha de matrícula</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var matricula in Model)
+            {
+                <tr>
+                    <td>@matricula.Curso?.Codigo</td>
+                    <td>@matricula.Curso?.Nombre</td>
+                    <td>@matricula.Curso?.Creditos</td>
+                    <td>@matricula.Curso?.Carrera?.Nombre</td>
+                    <td>
+                        @if (matricula.Curso?.Docente != null)
+                        {
+                            @matricula.Curso.Docente.Nombre
+                        }
+                        else
+                        {
+                            <span>Sin docente</span>
+                        }
+                    </td>
+                    <td>@matricula.FechaMatricula.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <form asp-action="Retirar" asp-controller="Estudiante" method="post">
+                            <input type="hidden" name="matriculaId" value="@matricula.Id" />
+                            <button type="submit" class="btn btn-danger">
+                                Retirar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (totalPages > 1)
+{
+    <div class="mt-4 text-center">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <a asp-action="MisCursos"
+                   asp-route-page="@i"
+                   class="btn-sistema btn-paginacion @(i == page ? "btn-paginacion-activa" : "")">
+                @i
+            </a>
+        }
+    </div>
+}

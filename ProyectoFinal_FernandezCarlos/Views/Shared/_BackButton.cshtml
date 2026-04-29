@@ -1,0 +1,18 @@
+﻿@if (User.IsInRole("Administrador"))
+{
+    <a asp-area="" asp-controller="Admin" asp-action="Inicio" class="back-link">
+        Atrás
+    </a>
+}
+else if (User.IsInRole("Estudiante"))
+{
+    <a asp-area="" asp-controller="Estudiante" asp-action="Inicio" class="back-link">
+        Atrás
+    </a>
+}
+else
+{
+    <a asp-area="" asp-controller="Home" asp-action="Inicio" class="back-link">
+        Atrás
+    </a>
+}
