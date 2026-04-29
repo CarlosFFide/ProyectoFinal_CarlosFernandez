@@ -1,0 +1,67 @@
+﻿@model IEnumerable<ProyectoFinal_FernandezCarlos.Models.Curso>
+
+@{
+    int page = ViewBag.Page ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No se encontraron cursos con los criterios indicados.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Créditos</th>
+                <th>Carrera</th>
+                <th>Docente</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var curso in Model)
+            {
+                <tr>
+                    <td>@curso.Codigo</td>
+                    <td>@curso.Nombre</td>
+                    <td>@curso.Creditos</td>
+                    <td>@curso.Carrera?.Nombre</td>
+                    <td>
+                        @if (curso.Docente != null)
+                        {
+                            @curso.Docente.Nombre
+                        }
+                        else
+                        {
+                            <span>Sin docente</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@curso.Id" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@curso.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (totalPages > 1)
+{
+    <div class="mt-4 text-center">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <button type="button"
+                    class="btn-sistema btn-paginacion @(i == page ? "btn-paginacion-activa" : "")"
+                    data-page="@i">
+                @i
+            </button>
+        }
+    </div>
+}
